@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+    <!--开启动态调用-->
+    <constant name="struts.devMode" value="true"></constant>
+    <constant name="struts.enable.DynamicMethosInvocation" value="true"></constant>
+    <!--name 配置包名-->
+    <package name="forum" namespace="/" extends="struts-default">
+
+
+        <interceptors>
+            <!--注册拦截器-->
+            <interceptor name="myIntercept" class="com.xzc.intercept.UserInterceptor"></interceptor>
+            <!--注册拦截器栈 -->
+            <interceptor-stack name="mystack">
+                <!--引入自己创建的拦截器-->
+                <interceptor-ref name="myIntercept">
+                    <param name="excludeMethods">login,register</param>
+                </interceptor-ref>
+                <!-- 引入struts预制的拦截器20个-->
+                <interceptor-ref name="defaultStack"></interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+        <!--指定包中默认的拦截器栈-->
+        <default-interceptor-ref name="mystack"></default-interceptor-ref>
+        <!--global-allowed-methods 配置全局允许的方法-->
+        <!--        <global-allowed-methods>login,register</global-allowed-methods>-->
+        <!--配置全局结果集-->
+        <global-results>
+            <result name="toLogin" type="redirect">/login.jsp</result>
+        </global-results>
+        <!--动态调用配置-->
+        <global-allowed-methods>regex:.*</global-allowed-methods>
+
+        <!--action 配置action名字 -->
+        <action name="userAction_*" class="com.xzc.web.UserAction" method="{1}">
+            <result name="success" type="redirectAction">
+                <param name="actionName">pasteAction_getAllPaste</param>
+            </result>
+
+            <result name="error">/login.jsp</result>
+
+            <result name="toLogin">/login.jsp</result>
+        </action>
+
+
+        <action name="pasteAction_*" class="com.xzc.web.PasteAction" method="{1}">
+            <result name="index">/index.jsp</result>
+        </action>
+    </package>
+
+
+
+</struts>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+    <class name="com.xzc.domain.User" table="user">
+        <id name="id" column="id">
+            <!--主键生成策略-->
+            <generator class="uuid"/>
+        </id>
+        <property name="username" column="username"/>
+        <property name="password" column="password"/>
+        <property name="name" column="name"/>
+        <property name="email" column="email"/>
+        <property name="telephone" column="telephone"/>
+
+        <!--集合属性名称
+            colum:外键列名
+            class:与他相关的对象的完整类名
+            cascade:级联操作
+            save-update:级联保存，级联更新
+            delete:级联删除
+            all:
+            inverse:配置关系是否不维护
+                true:不维护
+                false:维护
+                无论怎么放弃维护，总有一方需要维护（按照默认值来）
+                一般的开发中，一的一方放弃维护，多的一方不放弃维护
+            -->
+        <set name="pasteSet"  inverse="false">
+            <key column="user_id"/>
+            <one-to-many class="com.xzc.domain.Paste"/>
+        </set>
+
+        <set name="answerPasteSet"  >
+            <key column="paste_id"/>
+            <one-to-many class="com.xzc.domain.Answer"/>
+        </set>
+
+    </class>
+</hibernate-mapping>

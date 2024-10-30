@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.xzc.domain">
+    <class name="Paste" table="paste">
+        <!--id元素
+            name:属性名
+            column:列名(可选)
+            type:数据类型（可选）：填写列(属性)的数据类型，hibernate会根据数据类型自动转换
+                                每个类型有三种填发：java类型，hibernate类型，sql类型
+            length:长度（可选）：配置varchar的长度
+            not-null:是否为空（可选）
+        -->
+        <id name="id" column="id">
+            <!--
+                主键生成策略
+                identity:主键自增长
+                sequence:oracle中主键生成策略
+                native:identity和sequence的统称(hibernate会根据数据库自动选择)
+
+                uuid:hibernate提供的主键生成策略，生成一个32位的字符串，主键必须为String，理论上不会重复
+
+                assigned:手动生成主键
+            -->
+            <generator class="assigned"/>
+        </id>
+        <!--
+            property:除了id之外的其他属性
+            name:属性名
+            column(可选):列名
+            type(可选):数据类型
+            length(可选):长度
+            not-null(可选):是否为空，默认为false
+        -->
+        <property name="title" column="title"/>
+        <property name="content" column="content"/>
+        <property name="ansnum" column="ansnum"/>
+        <property name="offer" column="offer"/>
+
+    </class>
+</hibernate-mapping>

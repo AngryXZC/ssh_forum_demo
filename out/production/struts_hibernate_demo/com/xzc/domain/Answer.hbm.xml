@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.xzc.domain">
+    <class name="Answer" table="answer">
+        <id name="id" column="id">
+            <generator class="uuid"/>
+        </id>
+        <property name="content" column="content"/>
+        <many-to-one name="user" column="user_id" class="User"/>
+        <many-to-one name="paste" column="paste_id" class="Paste"/>
+    </class>
+</hibernate-mapping>
+

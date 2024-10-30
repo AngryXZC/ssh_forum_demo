@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+    <!--开启哪个包下的注解
+        开启包的时候，会开启包下的所有的注解-->
+<!--    <context:component-scan base-package="com.xzc"/>-->
+
+
+<!--配置dataSource-->
+    <bean name="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/struts"/>
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+    </bean>
+    <!--配值sessionFactory-->
+    <bean name="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <!--方言-->
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+                <!--是否生成sql语句-->
+                <prop key="hibernate.show_sql">true</prop>
+                <!--是否格式化sql-->
+                <prop key="hibernate.format_sql">true</prop>
+                <!--生成表策略-->
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+        <!--配置ORM数据源，会自动扫描该包下的所有配置文件-->
+        <property name="mappingDirectoryLocations" value="classpath:com/xzc/domain"/>
+    </bean>
+
+
+    <!--每一个请求都会创建一个新的Action,所以Action是多例的-->
+    <!--配置Action-->
+    <bean name="userAction" class="com.xzc.web.UserAction" scope="prototype" >
+        <property name="userService" ref="userService"/>
+    </bean>
+    <bean name="pasteAction" class="com.xzc.web.PasteAction" scope="prototype" >
+        <property name="pasteService" ref="pasteService"/>
+    </bean>
+
+    <!--配置Service-->
+    <bean name="userService" class="com.xzc.service.UserService">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+    <bean name="pasteService" class="com.xzc.service.PasteService">
+        <property name="pasteDao" ref="pasteDao"/>
+    </bean>
+
+    <!--配置Dao-->
+    <bean name="userDao" class="com.xzc.dao.UserDao">
+        <!--注入sessionFactory(用到了HibernateDaoSupport)-->
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean name="pasteDao" class="com.xzc.dao.PasteDao">
+        <!--注入sessionFactory(用到了HibernateDaoSupport)-->
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean name="answerDao" class="com.xzc.dao.AnswerDao">
+        <!--注入sessionFactory(用到了HibernateDaoSupport)-->
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!--配置事务核心管理器,依赖于连接池-->
+    <bean name="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!--配置事务的通知-->
+
+    <tx:advice id="advice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--织入-->
+    <aop:config>
+        <!--配置切入点-->
+        <aop:pointcut id="pointcut" expression="execution(* com.xzc.service.*.*(..))"/>
+        <!--配置切面-->
+        <aop:advisor advice-ref="advice" pointcut-ref="pointcut"/>
+    </aop:config>
+
+</beans>
